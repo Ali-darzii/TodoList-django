@@ -3,6 +3,7 @@ from rest_framework.exceptions import APIException
 from rest_framework.request import Request
 from rest_framework.permissions import BasePermission, SAFE_METHODS
 import re
+from drf_yasg import openapi
 
 
 def get_client_ip(request: Request):
@@ -33,7 +34,7 @@ class NotAuthorized(APIException):
 class IsNotAuthenticated(BasePermission):
     def has_permission(self, request, view):
         aa = request.META.get("Authorization", None)
-        print("Here is : ",aa)
+        print("Here is : ", aa)
         if 'HTTP_AUTHORIZATION' in request.META and request.META['HTTP_AUTHORIZATION']:
             raise NotAuthorized()
         return not request.user.is_authenticated
@@ -64,3 +65,18 @@ def validate_password(password: str):
         message["detail"] = "must contain 8 character or more"
 
     return message
+
+
+class DocumentProperties:
+    authProperties = {
+        'email': openapi.Schema(type=openapi.TYPE_STRING),
+        'password': openapi.Schema(type=openapi.TYPE_STRING)
+    }
+
+    authResponses = {
+        'access_token': openapi.Schema(type=openapi.TYPE_STRING),
+        'refresh_token': openapi.Schema(type=openapi.TYPE_STRING),
+    }
+
+    userRemoveProperties = {"refresh_token": openapi.Schema(type=openapi.TYPE_STRING), }
+    userRemoveResponses = {}
