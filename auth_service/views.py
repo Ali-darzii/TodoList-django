@@ -7,7 +7,7 @@ from utils.utils import IsNotAuthenticated, ErrorResponses
 from .serializers import UserRegisterSerializer, UserLoginSerializer
 from django.contrib.auth.models import User
 from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
-from django.contrib.auth import user_logged_in
+from django.contrib.auth import user_logged_in, user_login_failed
 from django.utils import timezone
 
 
@@ -46,6 +46,7 @@ class AuthAPIView(APIView):
             return Response(data=ErrorResponses.USER_NOT_FOUND, status=status.HTTP_404_NOT_FOUND)
 
         if not user.check_password(serializer.validated_data["password"]):
+            user_login_failed.send(sender=self.__class__, request=request, user=user)
             return Response(data=ErrorResponses.USER_NOT_FOUND, status=status.HTTP_404_NOT_FOUND)
 
         user.last_login = timezone.now()
