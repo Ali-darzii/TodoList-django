@@ -5,7 +5,7 @@ from rest_framework.permissions import BasePermission, SAFE_METHODS
 import re
 
 
-def get_cline_ip(request: Request):
+def get_client_ip(request: Request):
     x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
     if x_forwarded_for:
         ip = x_forwarded_for.split(',')[0]
