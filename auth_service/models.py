@@ -70,7 +70,7 @@ def create_user_logins(sender, instance, created, **kwargs):
 @receiver(signal=user_logged_in)
 def create_user_ip(sender, user, request, **kwargs):
     """ after user logged in, create user ip"""
-    ip = UserIP(ip=get_client_ip(request), userlogin=user.user_logins)
+    ip = UserIP(ip=get_client_ip(request), user_logins=user.user_logins)
     user.user_logins.no_logins += 1
     user.save()
     ip.save()
@@ -87,6 +87,6 @@ def create_user_device(sender, user, request, **kwargs):
 def login_failed(sender, request, user, **kwargs):
     """ after user login failed """
     user.user_logins.failed_attempts += 1
-    ip = UserIP(ip=get_client_ip(), userlogin=user.user_logins, failed=True)
+    ip = UserIP(ip=get_client_ip(request), user_logins=user.user_logins, failed=True)
     ip.save()
     user.save()

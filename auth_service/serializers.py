@@ -15,9 +15,12 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         """ Validate email and username exist check """
         try:
             validate_email(email)
-            return email
         except ValidationError:
             raise serializers.ValidationError(detail=ErrorResponses.BAD_FORMAT)
+
+        if User.objects.filter(email=email).exists():
+            raise serializers.ValidationError(detail=ErrorResponses.ALREADY_TAKEN)
+        return email
 
     def validate_password(self, password):
         password_validation = validate_password(password)
@@ -27,7 +30,6 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 
 
 class UserLoginSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = User
         fields = ("password", "email",)
